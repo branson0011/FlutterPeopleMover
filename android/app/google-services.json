@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "519305743359",
+    "project_id": "people-mover-c6088",
+    "storage_bucket": "people-mover-c6088.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:519305743359:android:db55b3b77eaf70a64835ca",
+        "android_client_info": {
+          "package_name": "com.peoplem"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAAnHVQs8I6Vnk9YtPfIInh3f4f93rB5E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:519305743359:android:cb61bd52360aa6be4835ca",
+        "android_client_info": {
+          "package_name": "com.peoplemover.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAAnHVQs8I6Vnk9YtPfIInh3f4f93rB5E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
