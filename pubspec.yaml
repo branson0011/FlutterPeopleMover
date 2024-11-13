@@ -10,7 +10,7 @@ environment:
   
 dependencies:
   flutter:
-   sdk: flutter
+    sdk: flutter
   cupertino_icons: ^1.0.8
   firebase_core: ^2.32.0
   firebase_auth: ^4.16.0
@@ -29,7 +29,7 @@ dependencies:
   
 dev_dependencies:
   flutter_test:
-   sdk: flutter
+    sdk: flutter
   flutter_lints: ^5.0.0
   build_runner: ^2.4.13
   json_serializable: ^6.8.0
@@ -46,15 +46,15 @@ flutter:
   uses-material-design: true
   
   assets:
-   - assets/icons/google.png
-   - assets/icons/apple.png
+    - assets/icons/google.png
+    - assets/icons/apple.png
   
   fonts:
-   - family: OpenSans
-    fonts:
-      - asset: fonts/OpenSans-Regular.ttf
-      - asset: fonts/OpenSans-Bold.ttf
-       weight: 700
+    - family: OpenSans
+      fonts:
+      - asset: fonts/OpenSans-Regular.ttf
+      - asset: fonts/OpenSans-Bold.ttf
+        weight: 700
   
 # The following configurations are not part of the pubspec.yaml file.
 # They should be handled in their respective platform-specific files:
