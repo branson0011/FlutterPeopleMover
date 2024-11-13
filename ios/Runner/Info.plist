@@ -2,62 +2,13 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>$(DEVELOPMENT_LANGUAGE)</string>
-	<key>CFBundleDisplayName</key>
-	<string>People Mover</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>people_mover</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>$(FLUTTER_BUILD_NAME)</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>People Mover needs access to your location to show nearby venues and provide accurate directions.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>eople Mover uses your location to provide real-time updates on nearby venues and events, even when the app is not actively in use.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>People Mover uses your location to provide real-time updates on nearby venues and events, both when the app is in use and in the background</string>
-	<key>NSCameraUsageDescription</key>
-	<string>People Mover needs access to your camera to allow you to take photos for your profile or venue reviews.</string>
-	<key>NSFaceIDUsageDescription</key>
-	<string>People Mover uses Face ID to securely authenticate you and protect your personal information.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>People Mover needs access to your photo library to allow you to choose photos for your profile or venue reviews.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>People Mover needs access to your microphone to allow you to record audio reviews or messages.</string>
+    <key>NSFaceIDUsageDescription</key>
+    <string>We use Face ID to secure your account and provide quick access</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need your location to show nearby venues and events</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>We use your location to provide real-time updates about venues near you</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>We use your location to provide real-time updates about venues near you</string>
 </dict>
 </plist>
