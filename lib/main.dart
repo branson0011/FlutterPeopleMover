@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';  
 import 'package:provider/provider.dart';  
-import 'package:firebase_core/firebase_core.dart';  
-import 'src/core/navigation/auth_wrapper.dart';  
-import 'src/features/auth/providers/auth_provider.dart';  
-import 'src/features/profile/providers/profile_provider.dart';  
-import 'firebase_options.dart';  
+import 'src/core/config/firebase_config.dart';  
+import 'src/core/di/service_locator.dart';  
   
 void main() async {  
   WidgetsFlutterBinding.ensureInitialized();  
-  await Firebase.initializeApp(  
-   options: DefaultFirebaseOptions.currentPlatform,  
-  );  
+   
+  // Initialize Firebase  
+  await FirebaseConfig.initialize();  
+   
+  // Setup service locator  
+  setupServiceLocator();  
    
   runApp(const MyApp());  
 }  
