@@ -17,7 +17,8 @@ class AuthTextField extends StatelessWidget {
   final TextInputType? keyboardType;  
   final String? Function(String?)? validator;  
   final VoidCallback? onEditingComplete;  
-  
+  final FocusNode? focusNode;  
+
   const AuthTextField({  
    Key? key,  
    required this.label,  
@@ -28,6 +29,7 @@ class AuthTextField extends StatelessWidget {
    this.keyboardType,  
    this.validator,  
    this.onEditingComplete,  
+   this.focusNode,  
   }) : super(key: key);  
   
   @override  
@@ -43,6 +45,7 @@ class AuthTextField extends StatelessWidget {
     keyboardType: keyboardType,  
     validator: validator,  
     onEditingComplete: onEditingComplete,  
+    focusNode: focusNode,  
    );  
   }  
 }  
@@ -59,6 +62,8 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
   final _emailController = TextEditingController();  
   final _passwordController = TextEditingController();  
   final _nameController = TextEditingController();  
+  final _emailFocus = FocusNode();  
+  final _passwordFocus = FocusNode();  
    
   late AnimationController _animationController;  
   late Animation<double> _fadeAnimation;  
@@ -112,14 +117,23 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
   }  
   
   Future<UserCredential?> _handleSocialAuthentication(AuthProvider authProvider, String provider) async {  
-   switch (provider) {  
-    case 'google':  
-      return await authProvider.signInWithGoogle();  
-    case 'apple':  
-      return await authProvider.signInWithApple();  
-    default:  
+    try {  
+      switch (provider) {  
+        case 'google':  
+          final result = await authProvider.signInWithGoogle();  
+          if (result == null) throw Exception('Google sign in failed');  
+          return result;  
+        case 'apple':  
+          final result = await authProvider.signInWithApple();  
+          if (result == null) throw Exception('Apple sign in failed');  
+          return result;  
+        default:  
+          return null;  
+      }  
+    } catch (e) {  
+      setState(() => _errorMessage = 'Social authentication failed: ${e.toString()}');  
       return null;  
-   }  
+    }  
   }  
   
   Future<UserCredential?> _handleFormAuthentication(AuthProvider authProvider) async {  
@@ -240,16 +254,20 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
   }  
   
   Future<void> _handleBiometricAuth() async {  
-   final result = await _biometricService.authenticate();  
-   if (result.isSuccess) {  
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);  
-    final userCredential = await authProvider.signInWithBiometric();  
-    if (userCredential != null && mounted) {  
-      await _handleSuccessfulAuthentication(userCredential, null);  
+    try {  
+      final result = await _biometricService.authenticate();  
+      if (result) {  
+        final authProvider = Provider.of<AuthProvider>(context, listen: false);  
+        final userCredential = await authProvider.signInWithBiometric();  
+        if (userCredential != null && mounted) {  
+          await _handleSuccessfulAuthentication(userCredential, null);  
+        }  
+      } else {  
+        setState(() => _errorMessage = 'Biometric authentication failed');  
+      }  
+    } catch (e) {  
+      setState(() => _errorMessage = 'Biometric error: ${e.toString()}');  
     }  
-   } else {  
-    setState(() => _errorMessage = result.error);  
-   }  
   }  
   
   @override  
@@ -301,6 +319,8 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
    _emailController.dispose();  
    _passwordController.dispose();  
    _nameController.dispose();  
+   _emailFocus.dispose();  
+   _passwordFocus.dispose();  
    _animationController.dispose();  
    super.dispose();  
   }  
@@ -344,8 +364,18 @@ class AuthForm extends StatelessWidget {
        ),  
        if (!formState.isLogin)  
         NameField(controller: controllers['name']!),  
-       EmailField(controller: controllers['email']!),  
-       PasswordField(controller: controllers['password']!),  
+       EmailField(  
+         controller: controllers['email']!,  
+         validator: _validateEmail,  
+         keyboardType: TextInputType.emailAddress,  
+         focusNode: _emailFocus,  
+         onEditingComplete: () => FocusScope.of(context).nextFocus(),  
+       ),  
+       PasswordField(  
+         controller: controllers['password']!,  
+         validator: _validatePassword,  
+         focusNode: _passwordFocus,  
+       ),  
        SubmitButton(  
         isLogin: formState.isLogin,  
         onPressed: onSubmit,  

@@ -5,6 +5,9 @@ import 'package:local_auth/local_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';  
 import 'package:crypto/crypto.dart';  
 import 'dart:convert';  
+import 'package:device_info_plus/device_info_plus.dart';  
+import 'package:encrypt/encrypt.dart';  
+import 'package:random_string/random_string.dart';  
   
 class BiometricService {  
   static final BiometricService _instance = BiometricService._internal();  
@@ -13,7 +16,6 @@ class BiometricService {
   
   final LocalAuthentication _localAuth = LocalAuthentication();  
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();  
-  
   static const String _keyPrefix = 'biometric_';  
   static const String _saltKey = 'biometric_salt';  
   
@@ -248,6 +250,70 @@ class BiometricService {
     rethrow;  
    }  
   }  
+  
+  Future<void> storeSecureData(String key, String value) async {  
+    try {  
+     // Add prefix to key for better organization  
+     final prefixedKey = _keyPrefix + key;  
+      await _secureStorage.write(  
+       key: prefixedKey,  
+       value: value,  
+       aOptions: const AndroidOptions(  
+         encryptedSharedPreferences: true,  
+       ),  
+       iOptions: const IOSOptions(  
+         accessibility: KeychainAccessibility.first_unlock,  
+       ),  
+      );  
+    } catch (e) {  
+      throw BiometricException(  
+        'Failed to store secure data',  
+        details: e.toString(),  
+      );  
+    }  
+  }  
+  
+  Future<String?> getSecureData(String key) async {  
+    try {  
+     // Add prefix to key for better organization  
+     final prefixedKey = _keyPrefix + key;  
+      return await _secureStorage.read(  
+       key: prefixedKey,  
+       aOptions: const AndroidOptions(  
+         encryptedSharedPreferences: true,  
+       ),  
+       iOptions: const IOSOptions(  
+         accessibility: KeychainAccessibility.first_unlock,  
+       ),  
+      );  
+    } catch (e) {  
+      throw BiometricException(  
+        'Failed to retrieve secure data',  
+        details: e.toString(),  
+      );  
+    }  
+  }  
+  
+  Future<void> storeBiometricCredentials({  
+   required String userId,  
+   required String provider,  
+   required Map<String, dynamic> credentials,  
+  }) async {  
+   try {  
+     final data = {  
+       'provider': provider,  
+       'credentials': credentials,  
+       'timestamp': DateTime.now().toIso8601String(),  
+     };  
+     
+     await storeSecureData(  
+       'auth_$userId',  
+       jsonEncode(data),  
+     );  
+   } catch (e) {  
+     throw BiometricException('Failed to store biometric credentials');  
+   }  
+ }  
 }  
   
 class BiometricException implements Exception {  
