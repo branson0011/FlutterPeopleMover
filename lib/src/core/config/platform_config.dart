@@ -7,10 +7,6 @@ class PlatformConfig {
   static bool get isIOS => !kIsWeb && Platform.isIOS;
   static bool get isAndroid => !kIsWeb && Platform.isAndroid;
   
-  // Minimum supported versions
-  static const int minAndroidSdk = 21;
-  static const String minIOSVersion = '12.0';
-  
   // Feature flags
   static const bool enableBiometrics = true;
   static const bool enableLocationServices = true;
