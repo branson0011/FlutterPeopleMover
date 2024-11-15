@@ -1,3 +1,4 @@
+import 'package:sqflite/sqflite.dart';
 import '../models/category.dart';
 import 'base_repository.dart';
 
@@ -8,29 +9,26 @@ class CategoryRepository extends BaseRepository {
     return await insert(table, category.toMap());
   }
 
-  Future<Category?> getCategory(String id) async {
-    final maps = await query(
-      table,
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-
-    if (maps.isEmpty) return null;
-    return Category.fromMap(maps.first);
+  Future<List<Category>> getAllCategories() async {
+    final results = await query(table);
+    return results.map((map) => Category.fromMap(map)).toList();
   }
 
-  Future<List<Category>> getAllCategories() async {
-    final maps = await query(table);
-    return maps.map((map) => Category.fromMap(map)).toList();
+  Future<List<Category>> getParentCategories() async {
+    final results = await query(
+      table,
+      where: 'parent_id IS NULL',
+    );
+    return results.map((map) => Category.fromMap(map)).toList();
   }
 
   Future<List<Category>> getChildCategories(String parentId) async {
-    final maps = await query(
+    final results = await query(
       table,
       where: 'parent_id = ?',
       whereArgs: [parentId],
     );
-    return maps.map((map) => Category.fromMap(map)).toList();
+    return results.map((map) => Category.fromMap(map)).toList();
   }
 
   Future<void> updateCategory(Category category) async {
@@ -47,11 +45,11 @@ class CategoryRepository extends BaseRepository {
   }
 
   Future<List<Category>> searchCategories(String query) async {
-    final maps = await this.query(
+    final results = await this.query(
       table,
       where: 'name LIKE ?',
       whereArgs: ['%$query%'],
     );
-    return maps.map((map) => Category.fromMap(map)).toList();
+    return results.map((map) => Category.fromMap(map)).toList();
   }
 }

@@ -3,7 +3,7 @@ class Recommendation {
   final String userId;
   final String venueId;
   final double score;
-  final String reason;
+  final String? reason;
   final DateTime createdAt;
   final DateTime? expiresAt;
 
@@ -12,7 +12,7 @@ class Recommendation {
     required this.userId,
     required this.venueId,
     required this.score,
-    required this.reason,
+    this.reason,
     required this.createdAt,
     this.expiresAt,
   });
@@ -41,5 +41,21 @@ class Recommendation {
       'created_at': createdAt.millisecondsSinceEpoch,
       'expires_at': expiresAt?.millisecondsSinceEpoch,
     };
+  }
+
+  Recommendation copyWith({
+    double? score,
+    String? reason,
+    DateTime? expiresAt,
+  }) {
+    return Recommendation(
+      id: id,
+      userId: userId,
+      venueId: venueId,
+      score: score ?? this.score,
+      reason: reason ?? this.reason,
+      createdAt: createdAt,
+      expiresAt: expiresAt ?? this.expiresAt,
+    );
   }
 }

@@ -1,8 +1,8 @@
 import 'dart:convert';
-import '../models/user_preferences.dart';
 import 'base_repository.dart';
+import '../models/user_preferences.dart';
 
-class PreferenceRepository extends BaseRepository {
+class UserPreferencesRepository extends BaseRepository {
   static const String table = 'user_preferences';
 
   Future<void> savePreferences(UserPreferences preferences) async {
@@ -30,10 +30,7 @@ class PreferenceRepository extends BaseRepository {
     return UserPreferences.fromMap(map);
   }
 
-  Future<void> updatePreferences(
-    String userId,
-    Map<String, dynamic> updates,
-  ) async {
+  Future<void> updatePreferences(String userId, Map<String, dynamic> updates) async {
     final existing = await getPreferences(userId);
     if (existing == null) {
       await savePreferences(
@@ -62,14 +59,7 @@ class PreferenceRepository extends BaseRepository {
     );
   }
 
-  Future<void> deletePreferences(String userId) async {
-    await delete(table, 'user_id = ?', [userId]);
-  }
-
-  Future<List<String>> getUsersWithPreference(
-    String key,
-    dynamic value,
-  ) async {
+  Future<List<String>> getUsersWithPreference(String key, dynamic value) async {
     final allPrefs = await query(table);
     return allPrefs
         .where((row) {

@@ -9,24 +9,36 @@ class InteractionRepository extends BaseRepository {
     return await insert(table, interaction.toMap());
   }
 
-  Future<List<UserInteraction>> getUserInteractions(String userId) async {
-    final maps = await query(
+  Future<List<UserInteraction>> getUserInteractions(
+    String userId, {
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    final results = await query(
       table,
       where: 'user_id = ?',
       whereArgs: [userId],
       orderBy: 'timestamp DESC',
+      limit: limit,
+      offset: offset,
     );
-    return maps.map((map) => UserInteraction.fromMap(map)).toList();
+    return results.map((map) => UserInteraction.fromMap(map)).toList();
   }
 
-  Future<List<UserInteraction>> getVenueInteractions(String venueId) async {
-    final maps = await query(
+  Future<List<UserInteraction>> getVenueInteractions(
+    String venueId, {
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    final results = await query(
       table,
       where: 'venue_id = ?',
       whereArgs: [venueId],
       orderBy: 'timestamp DESC',
+      limit: limit,
+      offset: offset,
     );
-    return maps.map((map) => UserInteraction.fromMap(map)).toList();
+    return results.map((map) => UserInteraction.fromMap(map)).toList();
   }
 
   Future<Map<String, int>> getInteractionCounts(String venueId) async {
@@ -46,21 +58,11 @@ class InteractionRepository extends BaseRepository {
     );
   }
 
-  Future<List<String>> getMostInteractedVenues(String userId, {int limit = 10}) async {
-    final sql = '''
-      SELECT venue_id, COUNT(*) as count
-      FROM $table
-      WHERE user_id = ?
-      GROUP BY venue_id
-      ORDER BY count DESC
-      LIMIT ?
-    ''';
-
-    final results = await rawQuery(sql, [userId, limit]);
-    return results.map((row) => row['venue_id'] as String).toList();
-  }
-
   Future<void> deleteInteraction(String id) async {
     await delete(table, 'id = ?', [id]);
+  }
+
+  Future<void> deleteUserInteractions(String userId) async {
+    await delete(table, 'user_id = ?', [userId]);
   }
 }

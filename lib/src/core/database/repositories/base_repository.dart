@@ -2,16 +2,20 @@ import 'package:sqflite/sqflite.dart';
 import '../database_helper.dart';
 
 abstract class BaseRepository {
-  final DatabaseHelper databaseHelper = DatabaseHelper();
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
 
-  Future<Database> get database async => await databaseHelper.database;
+  Future<Database> get database async => await _databaseHelper.database;
 
-  Future<int> insert(String table, Map<String, dynamic> row) async {
-    final Database db = await database;
-    return await db.insert(
-      table, 
+  Future<int> insert(
+    String table,
+    Map<String, dynamic> row, {
+    ConflictAlgorithm? conflictAlgorithm,
+  }) async {
+    final database = await database;
+    return await database.insert(
+      table,
       row,
-      conflictAlgorithm: ConflictAlgorithm.replace,
+      conflictAlgorithm: conflictAlgorithm,
     );
   }
 
@@ -27,8 +31,8 @@ abstract class BaseRepository {
     int? limit,
     int? offset,
   }) async {
-    final Database db = await database;
-    return await db.query(
+    final database = await database;
+    return await database.query(
       table,
       distinct: distinct,
       columns: columns,
@@ -48,8 +52,8 @@ abstract class BaseRepository {
     String where,
     List<dynamic> whereArgs,
   ) async {
-    final Database db = await database;
-    return await db.update(table, row, where: where, whereArgs: whereArgs);
+    final database = await database;
+    return await database.update(table, row, where: where, whereArgs: whereArgs);
   }
 
   Future<int> delete(
@@ -57,15 +61,15 @@ abstract class BaseRepository {
     String where,
     List<dynamic> whereArgs,
   ) async {
-    final Database db = await database;
-    return await db.delete(table, where: where, whereArgs: whereArgs);
+    final database = await database;
+    return await database.delete(table, where: where, whereArgs: whereArgs);
   }
 
   Future<List<Map<String, dynamic>>> rawQuery(
     String sql, [
     List<dynamic>? arguments,
   ]) async {
-    final Database db = await database;
-    return await db.rawQuery(sql, arguments);
+    final database = await database;
+    return await database.rawQuery(sql, arguments);
   }
 }
