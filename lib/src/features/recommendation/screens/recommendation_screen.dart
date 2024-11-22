@@ -1,123 +1,99 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/recommendation_provider.dart';
-import '../models/venue_model.dart';
+import '../widgets/recommendation_card.dart';
 
 class RecommendationScreen extends StatefulWidget {
   final String userId;
 
-  const RecommendationScreen({
-    Key? key,
-    required this.userId,
-  }) : super(key: key);
+  const RecommendationScreen({Key? key, required this.userId}) : super(key: key);
 
   @override
-  State<RecommendationScreen> createState() => _RecommendationScreenState();
+  _RecommendationScreenState createState() => _RecommendationScreenState();
 }
 
 class _RecommendationScreenState extends State<RecommendationScreen> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<RecommendationProvider>().fetchRecommendations(widget.userId);
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recommended Places'),
+        title: const Text('Discover'),
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              context
-                  .read<RecommendationProvider>()
-                  .refreshRecommendations(widget.userId);
-            },
+            icon: const Icon(Icons.tune),
+            onPressed: _showFilterOptions,
           ),
         ],
       ),
-      body: Consumer<RecommendationProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: Column(
+        children: [
+          _buildSearchBar(),
+          Expanded(
+            child: Consumer<RecommendationProvider>(
+              builder: (context, provider, child) {
+                if (provider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          if (provider.error != null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Error: ${provider.error}',
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      provider.fetchRecommendations(widget.userId);
+                return RefreshIndicator(
+                  onRefresh: () => provider.refreshRecommendations(widget.userId),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: provider.recommendations.length,
+                    itemBuilder: (context, index) {
+                      final venue = provider.recommendations[index];
+                      return RecommendationCard(
+                        venue: venue,
+                        onTap: () => _showVenueDetails(venue),
+                        onLike: () => _handleLike(venue),
+                        onShare: () => _handleShare(venue),
+                      );
                     },
-                    child: const Text('Retry'),
                   ),
-                ],
-              ),
-            );
-          }
-
-          if (provider.recommendations.isEmpty) {
-            return const Center(
-              child: Text('No recommendations available'),
-            );
-          }
-
-          return RefreshIndicator(
-            onRefresh: () =>
-                provider.refreshRecommendations(widget.userId),
-            child: ListView.builder(
-              itemCount: provider.recommendations.length,
-              itemBuilder: (context, index) {
-                final venue = provider.recommendations[index];
-                return VenueCard(venue: venue);
+                );
               },
             ),
-          );
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: TextField(
+        decoration: InputDecoration(
+          hintText: 'Search places...',
+          prefixIcon: const Icon(Icons.search),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.grey[200],
+        ),
+        onChanged: (value) {
+          // Implement search functionality
         },
       ),
     );
   }
-}
 
-class VenueCard extends StatelessWidget {
-  final VenueModel venue;
+  void _showFilterOptions() {
+    // Implement filter options
+  }
 
-  const VenueCard({
-    Key? key,
-    required this.venue,
-  }) : super(key: key);
+  void _showVenueDetails(venue) {
+    // Implement venue details navigation
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 8,
-      ),
-      child: ListTile(
-        title: Text(venue.name),
-        subtitle: Text(venue.description),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('${venue.rating}'),
-            const Icon(Icons.star, size: 16),
-          ],
-        ),
-        onTap: () {
-          // Navigate to venue details
-        },
-      ),
-    );
+  void _handleLike(venue) {
+    // Implement like functionality
+  }
+
+  void _handleShare(venue) {
+    // Implement share functionality
   }
 }

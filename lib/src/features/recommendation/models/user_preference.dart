@@ -36,4 +36,18 @@ class UserPreference {
       'lastUpdated': lastUpdated.toIso8601String(),
     };
   }
+
+  UserPreference copyWith({
+    Map<String, double>? categoryWeights,
+    Map<String, List<String>>? explicitPreferences,
+    Map<String, double>? implicitPreferences,
+  }) {
+    return UserPreference(
+      userId: userId,
+      categoryWeights: categoryWeights ?? this.categoryWeights,
+      explicitPreferences: explicitPreferences ?? this.explicitPreferences,
+      implicitPreferences: implicitPreferences ?? this.implicitPreferences,
+      lastUpdated: DateTime.now(),
+    );
+  }
 }
