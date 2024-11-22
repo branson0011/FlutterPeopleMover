@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'src/core/navigation/auth_wrapper.dart';  
 import 'src/features/auth/providers/auth_provider.dart';  
 import 'src/features/profile/providers/profile_provider.dart';  
+import 'src/features/recommendation/providers/recommendation_provider.dart';  
 import 'firebase_options.dart';  
   
 void main() async {  
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
     providers: [  
       ChangeNotifierProvider(create: (_) => AuthProvider()),  
       ChangeNotifierProvider(create: (_) => ProfileProvider()),  
+      ChangeNotifierProvider(create: (_) => RecommendationProvider()),  
     ],  
     child: MaterialApp(  
       title: 'People Mover',  
@@ -39,6 +41,7 @@ class MyApp extends StatelessWidget {
       routes: {  
        '/profile-setup': (context) => const ProfileSetupScreen(),  
        '/home': (context) => const HomeScreen(),  
+       '/recommendations': (context) => RecommendationScreen(userId: Provider.of<AuthProvider>(context, listen: false).user?.uid ?? ''),  
       },  
     ),  
    );  
