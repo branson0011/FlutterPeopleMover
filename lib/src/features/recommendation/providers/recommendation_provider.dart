@@ -1,56 +1,108 @@
 import 'package:flutter/foundation.dart';
-import '../services/recommendation_service.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../models/venue_model.dart';
-import '../models/user_preference.dart';
+import '../services/recommendation_service.dart';
+import '../services/analytics_service.dart';
+import '../services/cache_service.dart';
 
 class RecommendationProvider with ChangeNotifier {
-  final RecommendationService _recommendationService;
-  List<VenueModel> _recommendations = [];
-  bool _isLoading = false;
-  String? _error;
-  UserPreference? _userPreferences;
-  Map<String, bool> _selectedFilters = {};
+  final RecommendationService recommendationService;
+  final AnalyticsService analyticsService;
+  final CacheService cacheService;
+  
+  List<Venue> venues = [];
+  List<Venue> recommendedVenues = [];
+  bool isLoading = false;
+  String? error;
+  Map<String, dynamic> preferences = {};
+  List<String> recentVisits = [];
+  DateTime? lastFetch;
 
-  List<VenueModel> get recommendations => _recommendations;
-  bool get isLoading => _isLoading;
+  static const Duration cacheDuration = Duration(minutes: 15);
 
-  Future<void> fetchRecommendations(String userId) async {
-    _setLoading(true);
+  RecommendationProvider({
+    required AnalyticsService analytics,
+    required CacheService cache,
+  })  : recommendationService = RecommendationService(),
+        analyticsService = analytics,
+        cacheService = cache;
+
+  Future<void> fetchNearbyVenues({
+    required LatLng userLocation,
+    double radius = 5000,
+    Map<String, dynamic>? filters,
+  }) async {
+    final String cacheKey = '${userLocation.latitude},${userLocation.longitude}_$radius';
+    
+    if (_shouldUseCache(cacheKey)) {
+      final cachedVenues = await cacheService.getCachedVenues(cacheKey);
+      if (cachedVenues != null) {
+        venues = cachedVenues;
+        notifyListeners();
+        return;
+      }
+    }
     
     try {
-      // Get user preferences first
-      _userPreferences = await _recommendationService.getUserPreferences(userId);
-      
-      // Apply filters to recommendations
-      final filteredRecommendations = _applyFilters(_recommendations);
-      _recommendations = filteredRecommendations;
-      
+      isLoading = true;
+      error = null;
       notifyListeners();
-    } catch (e) {
-      _setError(e.toString());
+
+      venues = await recommendationService.getNearbyVenues(
+        userLocation: userLocation,
+        radius: radius,
+        filters: filters,
+      );
+
+      await cacheService.cacheVenues(cacheKey, venues);
+
+      isLoading = false;
+      notifyListeners();
+    } catch (exception) {
+      error = exception.toString();
+      isLoading = false;
+      notifyListeners();
     }
-    _setLoading(false);
   }
-  
-  void updateFilters(Map<String, bool> filters) {
-    _selectedFilters = filters;
-    final filteredRecommendations = _applyFilters(_recommendations);
-    _recommendations = filteredRecommendations;
+
+  Future<void> fetchRecommendations({
+    required LatLng userLocation,
+    double radius = 5000,
+    int limit = 10,
+  }) async {
+    try {
+      isLoading = true;
+      error = null;
+      notifyListeners();
+
+      recommendedVenues = await recommendationService.getRecommendedVenues(
+        userLocation: userLocation,
+        preferences: preferences,
+        radius: radius,
+        limit: limit,
+      );
+
+      isLoading = false;
+      notifyListeners();
+    } catch (exception) {
+      error = exception.toString();
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void updatePreferences(Map<String, dynamic> newPreferences) {
+    preferences = {...preferences, ...newPreferences};
     notifyListeners();
   }
 
-  void _setLoading(bool loading) {
-    _isLoading = loading;
+  void clearError() {
+    error = null;
     notifyListeners();
   }
 
-  void _setError(String error) {
-    _error = error;
-    notifyListeners();
-  }
-
-  List<VenueModel> _applyFilters(List<VenueModel> recommendations) {
-    // Implement filtering logic based on _selectedFilters
-    return recommendations; // Placeholder for actual filtering logic
+  bool _shouldUseCache(String cacheKey) {
+    // Implement cache logic here
+    return false; // Placeholder return
   }
 }

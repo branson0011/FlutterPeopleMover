@@ -1,104 +1,50 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/recommendation_score.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import '../models/venue_model.dart';
 
 class AnalyticsService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  Future<void> logRecommendationImpression({
-    required String userId,
-    required String venueId,
-    required RecommendationScore score,
-    required Map<String, dynamic> context,
-  }) async {
-    await _firestore.collection('analytics_impressions').add({
-      'userId': userId,
-      'venueId': venueId,
-      'score': score.toMap(),
-      'context': context,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
-  }
-
-  Future<void> logUserInteraction({
-    required String userId,
-    required String venueId,
-    required String interactionType,
-    required Map<String, dynamic> metadata,
-  }) async {
-    await _firestore.collection('analytics_interactions').add({
-      'userId': userId,
-      'venueId': venueId,
-      'interactionType': interactionType,
-      'metadata': metadata,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
-  }
-
-  Future<Map<String, dynamic>> getRecommendationMetrics({
-    required String userId,
-    required Duration period,
-  }) async {
-    final cutoff = DateTime.now().subtract(period);
-    
-    final impressions = await _firestore
-        .collection('analytics_impressions')
-        .where('userId', isEqualTo: userId)
-        .where('timestamp', isGreaterThan: cutoff)
-        .get();
-
-    final interactions = await _firestore
-        .collection('analytics_interactions')
-        .where('userId', isEqualTo: userId)
-        .where('timestamp', isGreaterThan: cutoff)
-        .get();
-
-    return {
-      'totalImpressions': impressions.docs.length,
-      'totalInteractions': interactions.docs.length,
-      'interactionRate': interactions.docs.length / impressions.docs.length,
-      'averageScore': _calculateAverageScore(impressions.docs),
-      'popularCategories': _getPopularCategories(impressions.docs),
-      'interactionTypes': _getInteractionTypes(interactions.docs),
-    };
-  }
-
-  double _calculateAverageScore(List<QueryDocumentSnapshot> docs) {
-    if (docs.isEmpty) return 0.0;
-    
-    final totalScore = docs.fold<double>(
-      0.0,
-      (sum, doc) => sum + (doc.data() as Map<String, dynamic>)['score']['score'],
+  final FirebaseAnalytics _analytics;
+  
+  AnalyticsService(this._analytics);
+  
+  Future<void> logVenueView(Venue venue) async {
+    await _analytics.logEvent(
+      name: 'venue_view',
+      parameters: {
+        'venue_id': venue.id,
+        'venue_name': venue.name,
+        'venue_type': venue.type,
+        'rating': venue.rating,
+      },
     );
-    
-    return totalScore / docs.length;
   }
-
-  Map<String, int> _getPopularCategories(List<QueryDocumentSnapshot> docs) {
-    final categories = <String, int>{};
-    
-    for (final doc in docs) {
-      final data = doc.data() as Map<String, dynamic>;
-      final venueCategories = List<String>.from(
-        data['context']['categories'] ?? [],
-      );
-      
-      for (final category in venueCategories) {
-        categories[category] = (categories[category] ?? 0) + 1;
-      }
-    }
-    
-    return categories;
+  
+  Future<void> logSearchQuery(String query, int resultCount) async {
+    await _analytics.logEvent(
+      name: 'venue_search',
+      parameters: {
+        'query': query,
+        'result_count': resultCount,
+      },
+    );
   }
-
-  Map<String, int> _getInteractionTypes(List<QueryDocumentSnapshot> docs) {
-    final types = <String, int>{};
-    
-    for (final doc in docs) {
-      final data = doc.data() as Map<String, dynamic>;
-      final type = data['interactionType'] as String;
-      types[type] = (types[type] ?? 0) + 1;
-    }
-    
-    return types;
+  
+  Future<void> logFilterUse(Map<String, dynamic> filters) async {
+    await _analytics.logEvent(
+      name: 'filter_use',
+      parameters: {
+        'filters': filters.toString(),
+      },
+    );
+  }
+  
+  Future<void> logRecommendationClick(Venue venue, double score) async {
+    await _analytics.logEvent(
+      name: 'recommendation_click',
+      parameters: {
+        'venue_id': venue.id,
+        'venue_name': venue.name,
+        'recommendation_score': score,
+      },
+    );
   }
 }

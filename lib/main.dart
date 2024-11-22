@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';  
 import 'package:provider/provider.dart';  
 import 'package:firebase_core/firebase_core.dart';  
+import 'package:src/features/recommendation/providers/recommendation_provider.dart';  
 import 'src/core/navigation/auth_wrapper.dart';  
 import 'src/features/auth/providers/auth_provider.dart';  
 import 'src/features/profile/providers/profile_provider.dart';  
-import 'src/features/recommendation/providers/recommendation_provider.dart';  
 import 'firebase_options.dart';  
   
 void main() async {  
@@ -39,9 +39,9 @@ class MyApp extends StatelessWidget {
        child: const HomeScreen(),  
       ),  
       routes: {  
-       '/profile-setup': (context) => const ProfileSetupScreen(),  
-       '/home': (context) => const HomeScreen(),  
-       '/recommendations': (context) => RecommendationScreen(userId: Provider.of<AuthProvider>(context, listen: false).user?.uid ?? ''),  
+       '/': (context) => const AuthWrapper(),  
+       '/profile': (context) => const ProfileScreen(),  
+       '/recommendations': (context) => const RecommendationScreen(),  
       },  
     ),  
    );  
