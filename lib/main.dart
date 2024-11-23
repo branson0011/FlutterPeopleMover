@@ -5,6 +5,11 @@ import 'package:src/features/recommendation/providers/recommendation_provider.da
 import 'src/core/navigation/auth_wrapper.dart';  
 import 'src/features/auth/providers/auth_provider.dart';  
 import 'src/features/profile/providers/profile_provider.dart';  
+import 'src/features/preferences/providers/preference_provider.dart';  
+import 'src/features/preferences/screens/preference_management_screen.dart';  
+import 'src/features/preferences/screens/preference_onboarding_screen.dart';  
+import 'src/features/preferences/models/user_preferences.dart';  
+import 'src/features/preferences/services/preference_service.dart';  
 import 'firebase_options.dart';  
   
 void main() async {  
@@ -25,6 +30,7 @@ class MyApp extends StatelessWidget {
     providers: [  
       ChangeNotifierProvider(create: (_) => AuthProvider()),  
       ChangeNotifierProvider(create: (_) => ProfileProvider()),  
+      ChangeNotifierProvider(create: (_) => PreferenceProvider()),  
       ChangeNotifierProvider(create: (_) => RecommendationProvider()),  
     ],  
     child: MaterialApp(  
@@ -42,6 +48,8 @@ class MyApp extends StatelessWidget {
        '/': (context) => const AuthWrapper(),  
        '/profile': (context) => const ProfileScreen(),  
        '/recommendations': (context) => const RecommendationScreen(),  
+       '/preferences': (context) => const PreferenceManagementScreen(),  
+       '/preferences/onboarding': (context) => PreferenceOnboardingScreen(userId: ''),  
       },  
     ),  
    );  
