@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../home/screens/home_screen.dart';
+import '../../explore/screens/explore_screen.dart';
+import '../../social_hub/screens/social_hub_screen.dart';
 import '../../profile/screens/profile_screen.dart';
 import '../../settings/screens/settings_screen.dart';
+
+const double _navigationBarHeight = 64.0;
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({Key? key}) : super(key: key);
@@ -16,8 +19,24 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   
   final List<Widget> _screens = [
     const HomeScreen(),
+    const ExploreScreen(),
+    const SocialHubScreen(),
     const ProfileScreen(),
     const SettingsScreen(),
+  ];
+
+  final List<NavigationDestination> _destinations = [
+    const NavigationDestination(
+      icon: Icon(Icons.home_outlined),
+      selectedIcon: Icon(Icons.home),
+      label: 'Home',
+    ),
+    const NavigationDestination(
+      icon: Icon(Icons.explore_outlined),
+      selectedIcon: Icon(Icons.explore),
+      label: 'Explore',
+    ),
+    // ...rest of navigation destinations
   ];
 
   @override
@@ -28,28 +47,30 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         children: _screens,
       ),
       bottomNavigationBar: NavigationBar(
+        height: _navigationBarHeight,
         selectedIndex: _currentIndex,
+        destinations: _destinations,
         onDestinationSelected: (index) {
-          setState(() => _currentIndex = index);
+          setState(() {
+            _currentIndex = index;
+          });
         },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        elevation: 3,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showSearchModal(context),
+        child: const Icon(Icons.search),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    );
+  }
+
+  void _showSearchModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => const SearchModal(),
     );
   }
 }

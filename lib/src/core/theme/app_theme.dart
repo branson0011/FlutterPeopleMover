@@ -1,11 +1,25 @@
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
-class AppTheme {
+ class AppTheme {
+  static const primaryColor = Color(0xFF1A1A1A);
+  static const accentColor = Color(0xFF00BFA5);
+  static const backgroundColor = Colors.white;
+  static const surfaceColor = Color(0xFFF8F9FA);
+
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF2196F3),
+      seedColor: accentColor,
       brightness: Brightness.light,
+      primary: primaryColor,
+      secondary: accentColor,
+      background: backgroundColor,
+      surface: surfaceColor,
+    ),
+    scaffoldBackgroundColor: backgroundColor,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: backgroundColor,
+      elevation: 0,
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
@@ -24,7 +38,7 @@ class AppTheme {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(
-          color: Color(0xFF2196F3),
+          color: accentColor,
           width: 2,
         ),
       ),
@@ -32,10 +46,12 @@ class AppTheme {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         elevation: 0,
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
       ),
     ),
     textButtonTheme: TextButtonThemeData(
